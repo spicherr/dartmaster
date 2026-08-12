@@ -1,0 +1,21 @@
+:host { color: #f5f4ed; }
+* { box-sizing: border-box; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+.modal-backdrop { position: fixed; inset: 0; background: #090c0de6; display: grid; place-items: center; padding: 18px; z-index: 2; }
+.settings { width: min(100%, 500px); max-height: calc(100dvh - 36px); overflow: auto; padding: 25px; background: #20252a; border: 1px solid #3b4349; border-radius: 20px; box-shadow: 0 30px 80px #0009; }
+.settings-header, .settings-actions { display: flex; align-items: center; justify-content: space-between; }
+.settings h1 { margin: 4px 0 0; font-size: 1.8rem; }
+.eyebrow { margin: 0; color: #9ba3a5; letter-spacing: .16em; font-weight: 700; font-size: .68rem; }
+.icon-button { border: 1px solid #343a42; background: #20252a; color: #e8e7df; border-radius: 50%; width: 38px; height: 38px; font-size: 1.35rem; }
+.settings-intro { color: #a7afad; font-size: .9rem; line-height: 1.5; margin: 22px 0 16px; }
+.shortcut-editor { display: grid; gap: 8px; }
+.shortcut-row { display: grid; grid-template-columns: 52px 1fr 90px 32px; gap: 8px; align-items: center; color: #aab2b0; font-size: .82rem; }
+.shortcut-row input { width: 100%; min-width: 0; color: #faf9f2; background: #15191d; border: 1px solid #434a4f; border-radius: 11px; padding: 10px; text-align: center; outline: none; }
+.shortcut-row input:focus { border-color: #dc4343; box-shadow: 0 0 0 3px #dc434326; }
+.shortcut-row button { color: #e28585; background: transparent; border: 0; padding: 0; font-size: 1.4rem; }
+.add-hotkey { color: #e17878; background: transparent; border: 1px dashed #6b4545; border-radius: 9px; padding: 10px; width: 100%; margin-top: 12px; font-weight: 700; }
+.settings-actions { justify-content: flex-end; gap: 8px; margin-top: 22px; }
+.settings-actions > button { color: #c6ccca; background: transparent; border: 0; padding: 8px 10px; font-size: .82rem; }
+.primary { color: white !important; background: #c93434 !important; border: 0; border-radius: 11px; padding: 11px 17px !important; font-weight: 750; }
+.primary:hover { background: #dc4343 !important; }

@@ -1,0 +1,27 @@
+<div class="modal-backdrop" (click)="close.emit()">
+  <section class="settings" role="dialog" aria-modal="true" aria-labelledby="settings-title" (click)="$event.stopPropagation()">
+    <div class="settings-header">
+      <div>
+        <p class="eyebrow">EINSTELLUNGEN</p>
+        <h1 id="settings-title">Hotkeys</h1>
+      </div>
+      <button class="icon-button" type="button" aria-label="Schließen" (click)="close.emit()">×</button>
+    </div>
+    <p class="settings-intro">Lege fest, welche Taste welchen Punktwert einträgt. Hotkeys funktionieren, wenn kein Eingabefeld aktiv ist.</p>
+    <div class="shortcut-editor">
+      @for (shortcut of draftShortcuts(); track $index) {
+        <div class="shortcut-row">
+          <input aria-label="Taste" maxlength="1" [ngModel]="shortcut.key" (ngModelChange)="updateShortcut($index, 'key', $event)" name="key-{{ $index }}" />
+          <span>trägt ein</span>
+          <input aria-label="Punkte" type="number" min="0" max="180" [ngModel]="shortcut.score" (ngModelChange)="updateShortcut($index, 'score', $event)" name="score-{{ $index }}" />
+          <button type="button" aria-label="Hotkey löschen" (click)="removeShortcut($index)">×</button>
+        </div>
+      }
+    </div>
+    <button class="add-hotkey" type="button" (click)="addShortcut()">+ Hotkey hinzufügen</button>
+    <div class="settings-actions">
+      <button type="button" (click)="close.emit()">Abbrechen</button>
+      <button class="primary" type="button" (click)="saveShortcuts()">Speichern</button>
+    </div>
+  </section>
+</div>
