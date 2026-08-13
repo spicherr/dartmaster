@@ -1,63 +1,62 @@
 <main class="scoreboard-shell">
   <header>
     <div class="brand"><span class="brand-mark">●</span> dartmaster</div>
-    <button class="icon-button" type="button" aria-label="Hotkeys konfigurieren" (click)="settingsOpen.set(true)">⚙</button>
+    <div class="header-actions">
+      <button class="reset-button" type="button" (click)="reset()">Neu starten</button>
+      <button class="icon-button" type="button" aria-label="Hotkeys konfigurieren" (click)="settingsOpen.set(true)">⚙</button>
+    </div>
   </header>
 
   <div class="game-area">
     <section class="scoreboard" aria-label="Dart Scoreboard">
       <div class="players" aria-label="Spielstände">
         @for (player of players; track $index) {
-          <div class="player" [class.active]="activePlayer() === $index" [class.winner]="winner() === $index"><span>{{ player }}</span><strong>{{ playerScores()[$index] }}</strong></div>
+          <section class="player" [class.active]="activePlayer() === $index" [class.winner]="winner() === $index">
+            <div class="player-heading"><span>{{ player }}</span><small>{{ winner() === $index ? 'GEWONNEN' : activePlayer() === $index ? 'AM WURF' : '' }}</small></div>
+            <strong class="player-remaining">{{ playerScores()[$index] }}</strong>
+            <dl class="player-stats">
+              <div><dt>Pfeile</dt><dd>{{ playerStats()[$index].dartCount }}</dd></div>
+              <div><dt>AVG / 3 Darts</dt><dd>{{ playerStats()[$index].average }}</dd></div>
+              <div><dt>Letzter Wurf</dt><dd>{{ playerStats()[$index].lastThrow ?? '-' }}</dd></div>
+            </dl>
+          </section>
         }
       </div>
-      <p class="eyebrow">{{ isFinished() ? 'GEWINNER' : 'AM WURF' }}</p>
-      <p class="current-player">{{ winner() !== null ? players[winner()!] : players[activePlayer()] }}</p>
-      <div class="remaining" [class.finished]="isFinished()">{{ remaining() }}</div>
-      @if (isFinished()) {
-        <p class="success">Leg gewonnen!</p>
-      } @else {
-        <p class="hint">Maximaler Checkout: {{ remaining() > 170 ? '170' : remaining() }}</p>
-      }
-
+      <div class="entry-message" aria-live="assertive">@if (inputMessage()) { <p role="alert">{{ inputMessage() }}</p> }</div>
       <section class="touch-entry" aria-label="Touch Eingabe">
         <div class="entry-display-row">
-          <button class="keypad-button utility" type="button" (click)="clearInput()" [disabled]="scoreInput().length === 0">CLEAR</button>
+          <button class="keypad-button utility" type="button" (click)="clearOrUndo()" [disabled]="entryDisabled() || (scoreInput().length === 0 && throws().length === 0)">{{ scoreInput() ? 'CLEAR' : 'BACK' }}</button>
           <output class="entry-display" aria-live="polite">{{ scoreInput() || '0' }}</output>
-          <button class="keypad-button submit" type="button" (click)="scoreInput() ? submitInput() : noScore()" [disabled]="isFinished()">{{ scoreInput() ? 'SUBMIT' : 'MISS' }}</button>
+          <button class="keypad-button submit" type="button" (click)="scoreInput() ? submitInput() : noScore()" [disabled]="entryDisabled()">{{ scoreInput() ? 'SUBMIT' : 'NO SCORE' }}</button>
         </div>
 
         <div class="keypad-grid">
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(0)" [disabled]="shortcutScore(0) === null || isFinished()"><small>Hotkey 1</small><span>{{ shortcutScore(0) ?? '-' }}</span></button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('1')" [disabled]="isFinished()">1</button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('2')" [disabled]="isFinished()">2</button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('3')" [disabled]="isFinished()">3</button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(4)" [disabled]="shortcutScore(4) === null || isFinished()"><small>Hotkey 5</small><span>{{ shortcutScore(4) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(0)" [disabled]="shortcutScore(0) === null || entryDisabled()"><small>Hotkey 1</small><span>{{ shortcutScore(0) ?? '-' }}</span></button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('1')" [disabled]="entryDisabled()">1</button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('2')" [disabled]="entryDisabled()">2</button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('3')" [disabled]="entryDisabled()">3</button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(4)" [disabled]="shortcutScore(4) === null || entryDisabled()"><small>Hotkey 5</small><span>{{ shortcutScore(4) ?? '-' }}</span></button>
 
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(1)" [disabled]="shortcutScore(1) === null || isFinished()"><small>Hotkey 2</small><span>{{ shortcutScore(1) ?? '-' }}</span></button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('4')" [disabled]="isFinished()">4</button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('5')" [disabled]="isFinished()">5</button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('6')" [disabled]="isFinished()">6</button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(5)" [disabled]="shortcutScore(5) === null || isFinished()"><small>Hotkey 6</small><span>{{ shortcutScore(5) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(1)" [disabled]="shortcutScore(1) === null || entryDisabled()"><small>Hotkey 2</small><span>{{ shortcutScore(1) ?? '-' }}</span></button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('4')" [disabled]="entryDisabled()">4</button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('5')" [disabled]="entryDisabled()">5</button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('6')" [disabled]="entryDisabled()">6</button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(5)" [disabled]="shortcutScore(5) === null || entryDisabled()"><small>Hotkey 6</small><span>{{ shortcutScore(5) ?? '-' }}</span></button>
 
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(2)" [disabled]="shortcutScore(2) === null || isFinished()"><small>Hotkey 3</small><span>{{ shortcutScore(2) ?? '-' }}</span></button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('7')" [disabled]="isFinished()">7</button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('8')" [disabled]="isFinished()">8</button>
-          <button class="keypad-button number" type="button" (click)="appendDigit('9')" [disabled]="isFinished()">9</button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(6)" [disabled]="shortcutScore(6) === null || isFinished()"><small>Hotkey 7</small><span>{{ shortcutScore(6) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(2)" [disabled]="shortcutScore(2) === null || entryDisabled()"><small>Hotkey 3</small><span>{{ shortcutScore(2) ?? '-' }}</span></button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('7')" [disabled]="entryDisabled()">7</button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('8')" [disabled]="entryDisabled()">8</button>
+          <button class="keypad-button number" type="button" (click)="appendDigit('9')" [disabled]="entryDisabled()">9</button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(6)" [disabled]="shortcutScore(6) === null || entryDisabled()"><small>Hotkey 7</small><span>{{ shortcutScore(6) ?? '-' }}</span></button>
 
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(3)" [disabled]="shortcutScore(3) === null || isFinished()"><small>Hotkey 4</small><span>{{ shortcutScore(3) ?? '-' }}</span></button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(8)" [disabled]="shortcutScore(8) === null || isFinished()"><small>Hotkey 9</small><span>{{ shortcutScore(8) ?? '-' }}</span></button>
-          <button class="keypad-button number accent" type="button" (click)="submitDynamicZeroOr180()" [disabled]="isFinished()">{{ scoreInput() ? '0' : '180' }}</button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(9)" [disabled]="shortcutScore(9) === null || isFinished()"><small>Hotkey 10</small><span>{{ shortcutScore(9) ?? '-' }}</span></button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(7)" [disabled]="shortcutScore(7) === null || isFinished()"><small>Hotkey 8</small><span>{{ shortcutScore(7) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(3)" [disabled]="shortcutScore(3) === null || entryDisabled()"><small>Hotkey 4</small><span>{{ shortcutScore(3) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(8)" [disabled]="shortcutScore(8) === null || entryDisabled()"><small>Hotkey 9</small><span>{{ shortcutScore(8) ?? '-' }}</span></button>
+          <button class="keypad-button number accent" type="button" (click)="submitDynamicZeroOr180()" [disabled]="entryDisabled()">{{ scoreInput() ? '0' : '180' }}</button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(9)" [disabled]="shortcutScore(9) === null || entryDisabled()"><small>Hotkey 10</small><span>{{ shortcutScore(9) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(7)" [disabled]="shortcutScore(7) === null || entryDisabled()"><small>Hotkey 8</small><span>{{ shortcutScore(7) ?? '-' }}</span></button>
         </div>
       </section>
 
-      <div class="actions">
-        <button type="button" (click)="undo()" [disabled]="throws().length === 0">↶ Rückgängig <kbd>⌫</kbd></button>
-        <button type="button" (click)="reset()">Neu starten</button>
-      </div>
     </section>
 
     <section class="history" aria-label="Wurfübersicht">
@@ -65,7 +64,19 @@
       <div class="throw-table" role="table">
         <div class="throw-row table-head" role="row"><span role="columnheader">Spieler 1</span><span role="columnheader">Wurf</span><span role="columnheader">Spieler 2</span></div>
         @for (throwRow of throwRows(); track throwRow.round) {
-          <div class="throw-row" role="row"><span role="cell">{{ throwRow.scores[0] ?? '' }}</span><span class="throw-number" role="cell">{{ throwRow.round }}</span><span role="cell">{{ throwRow.scores[1] ?? '' }}</span></div>
+          <div class="throw-row" role="row">
+            <span role="cell">
+              @if (throwRow.scores[0]; as playerOneThrow) {
+                <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 1, Wurf ' + throwRow.round + ' ändern'" (click)="openEditThrow(playerOneThrow.id)">{{ playerOneThrow.score }}</button>
+              }
+            </span>
+            <span class="throw-number" role="cell">{{ throwRow.round }}</span>
+            <span role="cell">
+              @if (throwRow.scores[1]; as playerTwoThrow) {
+                <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 2, Wurf ' + throwRow.round + ' ändern'" (click)="openEditThrow(playerTwoThrow.id)">{{ playerTwoThrow.score }}</button>
+              }
+            </span>
+          </div>
         } @empty {
           <p class="empty-history">Noch keine Aufnahmen</p>
         }
@@ -77,4 +88,43 @@
 
 @if (settingsOpen()) {
   <app-hotkey-settings [shortcuts]="shortcuts()" (save)="saveShortcuts($event)" (close)="settingsOpen.set(false)" />
+}
+
+@if (editingThrow(); as throwToEdit) {
+  <div class="modal-backdrop" (click)="closeEditThrow()">
+    <section class="edit-dialog" role="dialog" aria-modal="true" aria-labelledby="edit-throw-title" (click)="$event.stopPropagation()">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">AUFNAHME ÄNDERN</p><h1 id="edit-throw-title">{{ players[throwToEdit.player] }}</h1></div>
+        <button class="dialog-close" type="button" aria-label="Dialog schliessen" (click)="closeEditThrow()">×</button>
+      </div>
+      <label for="edit-score">Punkte</label>
+      <input id="edit-score" type="number" min="0" max="180" inputmode="numeric" [value]="editScoreInput()" (input)="updateEditScore($any($event.target).value)" (keyup.enter)="saveEditedThrow()" autofocus />
+      @if (editError()) { <p class="edit-error">{{ editError() }}</p> }
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" (click)="closeEditThrow()">Abbrechen</button>
+        <button class="primary" type="button" (click)="saveEditedThrow()">Speichern</button>
+      </div>
+    </section>
+  </div>
+}
+
+@if (pendingCheckout(); as checkout) {
+  <div class="modal-backdrop">
+    <section class="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+      <p class="eyebrow">CHECKOUT</p>
+      <h1 id="checkout-title">{{ players[checkout.player] }} gewinnt mit {{ checkout.score }}</h1>
+      <p>Wie viele Pfeile wurden für das Checkout benötigt?</p>
+      <div class="choice-buttons" aria-label="Benötigte Pfeile">
+        @for (darts of [1, 2, 3]; track darts) { <button type="button" [class.selected]="checkoutDarts() === darts" (click)="setCheckoutDarts(darts)">{{ darts }}</button> }
+      </div>
+      <p>Wie viele Pfeile gingen auf Doppel?</p>
+      <div class="choice-buttons" aria-label="Pfeile auf Doppel">
+        @for (attempts of [1, 2, 3]; track attempts) { <button type="button" [class.selected]="checkoutDoubleAttempts() === attempts" [disabled]="attempts > checkoutDarts()" (click)="setCheckoutDoubleAttempts(attempts)">{{ attempts }}</button> }
+      </div>
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" (click)="closeCheckout()">Abbrechen</button>
+        <button class="primary" type="button" (click)="saveCheckout()">Leg abschliessen</button>
+      </div>
+    </section>
+  </div>
 }

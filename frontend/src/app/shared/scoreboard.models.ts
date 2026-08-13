@@ -4,9 +4,12 @@ export interface Shortcut {
 }
 
 export interface Throw {
+  id: number;
   score: number;
   at: Date;
   player: number;
+  darts: number;
+  doubleAttempts?: number;
 }
 
 export const DEFAULT_SHORTCUTS: Shortcut[] = [
