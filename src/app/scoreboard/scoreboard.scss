@@ -8,9 +8,7 @@ header { margin-bottom: 16px; }
 .brand { color: #f3f1e8; font-weight: 800; font-size: 1.16rem; letter-spacing: 0; }
 .brand-mark { color: #e53636; font-size: 1.4rem; vertical-align: -1px; margin-right: 4px; }
 .header-actions { display: flex; align-items: center; gap: 8px; }
-.icon-button, .reset-button { border: 1px solid #343a42; background: #20252a; color: #e8e7df; }
-.icon-button { border-radius: 50%; width: 38px; height: 38px; font-size: 1.35rem; }
-.reset-button { min-height: 38px; padding: 0 12px; border-radius: 9px; font-size: .78rem; font-weight: 700; }
+.reset-button { min-height: 38px; padding: 0 12px; border: 1px solid #343a42; border-radius: 9px; background: #20252a; color: #e8e7df; font-size: .78rem; font-weight: 700; }
 .game-area { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(270px, .9fr); gap: 12px; align-items: stretch; }
 .scoreboard { text-align: center; background: #20252a; border: 1px solid #343a42; border-radius: 18px; padding: 18px; box-shadow: 0 18px 55px #0004; }
 .players { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; text-align: left; }
@@ -41,8 +39,7 @@ header { margin-bottom: 16px; }
 .keypad-button.number { background: #242b30; font-size: clamp(1.7rem, 5vw, 2.7rem); }
 .keypad-button.accent, .keypad-button.submit { background: #c93434; border-color: #df5656; color: white; }
 .keypad-button.utility { background: #30363b; color: #d8ddda; }
-.keypad-button.hotkey { background: #1b2520; border-color: #385241; gap: 3px; padding: 8px 4px; }
-.keypad-button.hotkey small { color: #95d0a6; font-size: clamp(.58rem, 1.9vw, .72rem); font-weight: 800; text-transform: uppercase; }
+.keypad-button.hotkey { padding: 8px 4px; background: #1b2520; border-color: #385241; }
 .keypad-button.hotkey span { font-size: clamp(1rem, 3vw, 1.55rem); font-variant-numeric: tabular-nums; }
 .primary { color: white; background: #c93434; border: 0; border-radius: 11px; padding: 0 18px; font-weight: 750; }
 .primary:hover { background: #dc4343; }
@@ -80,4 +77,4 @@ header { margin-bottom: 16px; }
 .dialog-actions button { min-height: 44px; padding: 0 15px; }
 .secondary-button { color: #d7ddda; background: #30363b; border: 1px solid #4a545a; border-radius: 11px; font-weight: 750; }
 @media (max-width: 820px) { .game-area { grid-template-columns: 1fr; } .history { padding: 18px 12px; } .scoreboard-shell { width: min(100% - 18px, 720px); } }
-@media (max-width: 520px) { .scoreboard-shell { width: min(100% - 12px, 520px); padding-top: 10px; } header { margin-bottom: 10px; } .scoreboard { padding: 12px; } .player { padding: 10px; } .player-remaining { margin: 8px 0 11px; font-size: clamp(2.6rem, 15vw, 4.3rem); } .player-stats { gap: 4px; } .player-stats dt { font-size: .52rem; } .entry-display-row { grid-template-columns: .85fr 1fr .95fr; gap: 6px; } .keypad-grid { gap: 6px; } .keypad-button { min-height: 62px; border-radius: 8px; } .keypad-button.hotkey small { font-size: .54rem; } .history { padding: 14px 8px; } }
+@media (max-width: 520px) { .scoreboard-shell { width: min(100% - 12px, 520px); padding-top: 10px; } header { margin-bottom: 10px; } .scoreboard { padding: 12px; } .player { padding: 10px; } .player-remaining { margin: 8px 0 11px; font-size: clamp(2.6rem, 15vw, 4.3rem); } .player-stats { gap: 4px; } .player-stats dt { font-size: .52rem; } .entry-display-row { grid-template-columns: .85fr 1fr .95fr; gap: 6px; } .keypad-grid { gap: 6px; } .keypad-button { min-height: 62px; border-radius: 8px; } .history { padding: 14px 8px; } }

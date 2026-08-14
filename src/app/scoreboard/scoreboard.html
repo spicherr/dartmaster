@@ -3,7 +3,6 @@
     <div class="brand"><span class="brand-mark">●</span> dartmaster</div>
     <div class="header-actions">
       <button class="reset-button" type="button" (click)="reset()">Neu starten</button>
-      <button class="icon-button" type="button" aria-label="Hotkeys konfigurieren" (click)="settingsOpen.set(true)">⚙</button>
     </div>
   </header>
 
@@ -31,29 +30,29 @@
         </div>
 
         <div class="keypad-grid">
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(0)" [disabled]="shortcutScore(0) === null || entryDisabled()"><small>Hotkey 1</small><span>{{ shortcutScore(0) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(0)" [disabled]="shortcutScore(0) === null || entryDisabled()"><span>{{ shortcutScore(0) ?? '-' }}</span></button>
           <button class="keypad-button number" type="button" (click)="appendDigit('1')" [disabled]="entryDisabled()">1</button>
           <button class="keypad-button number" type="button" (click)="appendDigit('2')" [disabled]="entryDisabled()">2</button>
           <button class="keypad-button number" type="button" (click)="appendDigit('3')" [disabled]="entryDisabled()">3</button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(4)" [disabled]="shortcutScore(4) === null || entryDisabled()"><small>Hotkey 5</small><span>{{ shortcutScore(4) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(4)" [disabled]="shortcutScore(4) === null || entryDisabled()"><span>{{ shortcutScore(4) ?? '-' }}</span></button>
 
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(1)" [disabled]="shortcutScore(1) === null || entryDisabled()"><small>Hotkey 2</small><span>{{ shortcutScore(1) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(1)" [disabled]="shortcutScore(1) === null || entryDisabled()"><span>{{ shortcutScore(1) ?? '-' }}</span></button>
           <button class="keypad-button number" type="button" (click)="appendDigit('4')" [disabled]="entryDisabled()">4</button>
           <button class="keypad-button number" type="button" (click)="appendDigit('5')" [disabled]="entryDisabled()">5</button>
           <button class="keypad-button number" type="button" (click)="appendDigit('6')" [disabled]="entryDisabled()">6</button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(5)" [disabled]="shortcutScore(5) === null || entryDisabled()"><small>Hotkey 6</small><span>{{ shortcutScore(5) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(5)" [disabled]="shortcutScore(5) === null || entryDisabled()"><span>{{ shortcutScore(5) ?? '-' }}</span></button>
 
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(2)" [disabled]="shortcutScore(2) === null || entryDisabled()"><small>Hotkey 3</small><span>{{ shortcutScore(2) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(2)" [disabled]="shortcutScore(2) === null || entryDisabled()"><span>{{ shortcutScore(2) ?? '-' }}</span></button>
           <button class="keypad-button number" type="button" (click)="appendDigit('7')" [disabled]="entryDisabled()">7</button>
           <button class="keypad-button number" type="button" (click)="appendDigit('8')" [disabled]="entryDisabled()">8</button>
           <button class="keypad-button number" type="button" (click)="appendDigit('9')" [disabled]="entryDisabled()">9</button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(6)" [disabled]="shortcutScore(6) === null || entryDisabled()"><small>Hotkey 7</small><span>{{ shortcutScore(6) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(6)" [disabled]="shortcutScore(6) === null || entryDisabled()"><span>{{ shortcutScore(6) ?? '-' }}</span></button>
 
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(3)" [disabled]="shortcutScore(3) === null || entryDisabled()"><small>Hotkey 4</small><span>{{ shortcutScore(3) ?? '-' }}</span></button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(8)" [disabled]="shortcutScore(8) === null || entryDisabled()"><small>Hotkey 9</small><span>{{ shortcutScore(8) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(3)" [disabled]="shortcutScore(3) === null || entryDisabled()"><span>{{ shortcutScore(3) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(8)" [disabled]="shortcutScore(8) === null || entryDisabled()"><span>{{ shortcutScore(8) ?? '-' }}</span></button>
           <button class="keypad-button number accent" type="button" (click)="submitDynamicZeroOr180()" [disabled]="entryDisabled()">{{ scoreInput() ? '0' : '180' }}</button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(9)" [disabled]="shortcutScore(9) === null || entryDisabled()"><small>Hotkey 10</small><span>{{ shortcutScore(9) ?? '-' }}</span></button>
-          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(7)" [disabled]="shortcutScore(7) === null || entryDisabled()"><small>Hotkey 8</small><span>{{ shortcutScore(7) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(9)" [disabled]="shortcutScore(9) === null || entryDisabled()"><span>{{ shortcutScore(9) ?? '-' }}</span></button>
+          <button class="keypad-button hotkey" type="button" (click)="activateShortcut(7)" [disabled]="shortcutScore(7) === null || entryDisabled()"><span>{{ shortcutScore(7) ?? '-' }}</span></button>
         </div>
       </section>
 
@@ -85,10 +84,6 @@
   </div>
 
 </main>
-
-@if (settingsOpen()) {
-  <app-hotkey-settings [shortcuts]="shortcuts()" (save)="saveShortcuts($event)" (close)="settingsOpen.set(false)" />
-}
 
 @if (editingThrow(); as throwToEdit) {
   <div class="modal-backdrop" (click)="closeEditThrow()">

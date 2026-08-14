@@ -14,6 +14,13 @@ describe('ScoreboardComponent', () => {
     expect(fixture.componentInstance['remaining']()).toBe(501);
   });
 
+  it('uses the fixed hotkey configuration', () => {
+    const fixture = TestBed.createComponent(ScoreboardComponent);
+    const scoreboard = fixture.componentInstance;
+
+    expect(Array.from(scoreboard['hotkeyScores'])).toEqual([26, 40, 41, 43, 45, 60, 81, 85, 100, 140]);
+  });
+
   it('alternates turns after a score is entered', () => {
     const fixture = TestBed.createComponent(ScoreboardComponent);
     const scoreboard = fixture.componentInstance;

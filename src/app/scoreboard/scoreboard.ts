@@ -1,8 +1,6 @@
 import { Component, HostListener, computed, signal } from '@angular/core';
-import { HotkeySettingsComponent } from '../hotkey-settings/hotkey-settings';
-import { DEFAULT_SHORTCUTS, Shortcut, Throw } from '../shared/scoreboard.models';
-
-const SHORTCUT_STORAGE_KEY = 'dartmaster.shortcuts';
+import { SCOREBOARD_CONFIG } from '../config/scoreboard.config';
+import { Throw } from '../shared/scoreboard.models';
 
 interface ThrowCell {
   id: number;
@@ -27,7 +25,6 @@ interface PendingCheckout {
 
 @Component({
   selector: 'app-scoreboard',
-  imports: [HotkeySettingsComponent],
   templateUrl: './scoreboard.html',
   styleUrl: './scoreboard.scss',
 })
@@ -40,8 +37,7 @@ export class ScoreboardComponent {
   protected readonly scoreInput = signal('');
   protected readonly inputMessage = signal<string | null>(null);
   protected readonly throws = signal<Throw[]>([]);
-  protected readonly shortcuts = signal<Shortcut[]>(this.loadShortcuts());
-  protected readonly settingsOpen = signal(false);
+  protected readonly hotkeyScores = SCOREBOARD_CONFIG.hotkeyScores;
   protected readonly editingThrowId = signal<number | null>(null);
   protected readonly editScoreInput = signal('');
   protected readonly editError = signal<string | null>(null);
@@ -184,13 +180,13 @@ export class ScoreboardComponent {
   }
 
   protected activateShortcut(index: number): void {
-    const shortcut = this.shortcuts()[index];
-    if (!shortcut) return;
-    this.addScore(shortcut.score);
+    const score = this.hotkeyScores[index];
+    if (score === undefined) return;
+    this.addScore(score);
   }
 
   protected shortcutScore(index: number): number | null {
-    return this.shortcuts()[index]?.score ?? null;
+    return this.hotkeyScores[index] ?? null;
   }
 
   protected undo(): void {
@@ -253,15 +249,9 @@ export class ScoreboardComponent {
     this.closeEditThrow();
   }
 
-  protected saveShortcuts(shortcuts: Shortcut[]): void {
-    this.shortcuts.set(shortcuts);
-    localStorage.setItem(SHORTCUT_STORAGE_KEY, JSON.stringify(shortcuts));
-    this.settingsOpen.set(false);
-  }
-
   @HostListener('document:keydown', ['$event'])
   protected onKeydown(event: KeyboardEvent): void {
-    if (this.settingsOpen() || this.editingThrowId() !== null || this.pendingCheckout() !== null || event.ctrlKey || event.metaKey || event.altKey) return;
+    if (this.editingThrowId() !== null || this.pendingCheckout() !== null || event.ctrlKey || event.metaKey || event.altKey) return;
     const target = event.target as HTMLElement | null;
     if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return;
 
@@ -287,20 +277,6 @@ export class ScoreboardComponent {
       return;
     }
 
-    const shortcut = this.shortcuts().find((item) => item.key.toLowerCase() === event.key.toLowerCase());
-    if (shortcut) {
-      event.preventDefault();
-      this.addScore(shortcut.score);
-    }
-  }
-
-  private loadShortcuts(): Shortcut[] {
-    try {
-      const stored = localStorage.getItem(SHORTCUT_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : DEFAULT_SHORTCUTS;
-    } catch {
-      return DEFAULT_SHORTCUTS;
-    }
   }
 
   private recordThrow(score: number, player: number, darts: number, doubleAttempts?: number): void {
