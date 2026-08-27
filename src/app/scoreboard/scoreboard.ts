@@ -123,6 +123,7 @@ export class ScoreboardComponent {
       return { ...throwRow, remaining };
     });
   });
+  protected readonly recentThrowHistoryRows = computed(() => this.throwHistoryRows().slice(-3));
   protected readonly winner = computed(() => this.matchWinner());
   protected readonly isFinished = computed(() => this.matchWinner() !== null);
 

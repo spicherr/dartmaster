@@ -8,8 +8,9 @@
 
   <div class="game-area">
     <section class="scoreboard" aria-label="Dart Scoreboard">
-      <div class="match-info" aria-label="Spielmodus">Best Of {{ bestOfLegs }} ({{ currentLeg() }} / {{ bestOfLegs }})</div>
-      <div class="players" aria-label="Spielstände">
+      <div class="player-area">
+        <div class="match-info" aria-label="Spielmodus">Best Of {{ bestOfLegs }} ({{ currentLeg() }} / {{ bestOfLegs }})</div>
+        <div class="players" aria-label="Spielstände">
         <section class="player" [class.active]="activePlayer() === 0" [class.winner]="winner() === 0">
           <div class="player-heading"><span>{{ players[0] }}</span></div>
           <div class="player-summary">
@@ -32,25 +33,23 @@
             </dl>
           </div>
         </section>
+        </div>
       </div>
       <section class="history" aria-label="Wurfübersicht">
-        <div class="throw-scroll" role="list" aria-label="Aufnahmen pro Spieler">
-          <div class="throw-log-row start-score"><span></span><span>{{ startScore }}</span><span></span><span></span><span>{{ startScore }}</span></div>
-          @for (throwRow of throwHistoryRows(); track throwRow.round) {
-            <div class="throw-log-row" role="listitem">
-              <span>
+        <div class="throw-list" role="list" aria-label="Letzte drei Aufnahmerunden">
+          @for (throwRow of recentThrowHistoryRows(); track throwRow.round) {
+            <div class="throw-row" role="listitem">
+              <span class="player-throw">
                 @if (throwRow.scores[0]; as playerOneThrow) {
-                  <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 1, ' + throwRow.round * 3 + ' Pfeile ändern'" (click)="openEditThrow(playerOneThrow.id)">{{ playerOneThrow.score }}</button>
+                  <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 1 ändern'" (click)="openEditThrow(playerOneThrow.id)">{{ playerOneThrow.score }}</button>
                 }
               </span>
-              <span class="remaining-value">{{ throwRow.remaining[0] ?? '' }}</span>
               <span class="dart-count">{{ throwRow.round * 3 }}</span>
-              <span>
+              <span class="player-throw">
                 @if (throwRow.scores[1]; as playerTwoThrow) {
-                  <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 2, ' + throwRow.round * 3 + ' Pfeile ändern'" (click)="openEditThrow(playerTwoThrow.id)">{{ playerTwoThrow.score }}</button>
+                  <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 2 ändern'" (click)="openEditThrow(playerTwoThrow.id)">{{ playerTwoThrow.score }}</button>
                 }
               </span>
-              <span class="remaining-value">{{ throwRow.remaining[1] ?? '' }}</span>
             </div>
           } @empty {
             <p class="empty-history">Noch keine Aufnahmen</p>
@@ -62,16 +61,12 @@
         <section class="touch-entry" aria-label="Touch Eingabe">
         <div class="entry-display-row">
           <button class="keypad-button utility" type="button" (click)="undo()" [disabled]="entryDisabled() || throws().length === 0">BACK</button>
-          <button class="keypad-button utility" type="button" (click)="clearInput()" [disabled]="entryDisabled() || scoreInput().length === 0">CLEAR</button>
           <output class="entry-display" aria-live="polite">{{ scoreInput() || '0' }}</output>
-          <div class="entry-actions">
-            <button class="keypad-button submit" type="button" (click)="scoreInput() ? submitInput() : noScore()" [disabled]="entryDisabled()">{{ scoreInput() ? 'SUBMIT' : 'NO SCORE' }}</button>
-            @if (hasRestScoreInput()) {
-              <button class="keypad-button remaining-score" type="button" (click)="submitRemainingScore()" [disabled]="entryDisabled()">RESTSCORE</button>
-            } @else if (checkoutAvailable()) {
-              <button class="keypad-button checkout" type="button" (click)="startCheckout()" [disabled]="entryDisabled()">CHECKOUT</button>
-            }
-          </div>
+          @if (hasRestScoreInput()) {
+            <button class="keypad-button remaining-score contextual-action" type="button" (click)="submitRemainingScore()" [disabled]="entryDisabled()">RESTSCORE</button>
+          } @else if (checkoutAvailable()) {
+            <button class="keypad-button checkout contextual-action" type="button" (click)="startCheckout()" [disabled]="entryDisabled()">CHECKOUT</button>
+          }
         </div>
 
         <div class="keypad-grid">
@@ -98,6 +93,11 @@
           <button class="keypad-button number accent" type="button" (click)="submitDynamicZeroOr180()" [disabled]="entryDisabled()">{{ scoreInput() ? '0' : '180' }}</button>
           <button class="keypad-button hotkey" type="button" (click)="activateShortcut(9)" [disabled]="shortcutScore(9) === null || entryDisabled()"><span>{{ shortcutScore(9) ?? '-' }}</span></button>
           <button class="keypad-button hotkey" type="button" (click)="activateShortcut(7)" [disabled]="shortcutScore(7) === null || entryDisabled()"><span>{{ shortcutScore(7) ?? '-' }}</span></button>
+        </div>
+
+        <div class="bottom-entry-actions">
+          <button class="keypad-button utility clear" type="button" (click)="clearInput()" [disabled]="entryDisabled() || scoreInput().length === 0">CLEAR</button>
+          <button class="keypad-button submit" type="button" (click)="scoreInput() ? submitInput() : noScore()" [disabled]="entryDisabled()">{{ scoreInput() ? 'SUBMIT' : 'NO SCORE' }}</button>
         </div>
         </section>
       </div>

@@ -76,6 +76,29 @@ describe('ScoreboardComponent', () => {
     ]);
   });
 
+  it('shows only the three most recent throw rounds', () => {
+    const fixture = TestBed.createComponent(ScoreboardComponent);
+    const scoreboard = fixture.componentInstance;
+
+    scoreboard['addScore'](100);
+    scoreboard['addScore'](120);
+    scoreboard['addScore'](180);
+    scoreboard['addScore'](60);
+
+    scoreboard['addScore'](20);
+    scoreboard['addScore'](40);
+    scoreboard['addScore'](10);
+
+    expect(scoreboard['recentThrowHistoryRows']().map((row) => ({
+      round: row.round,
+      scores: row.scores.map((score) => score?.score ?? null),
+    }))).toEqual([
+      { round: 2, scores: [180, 60] },
+      { round: 3, scores: [20, 40] },
+      { round: 4, scores: [10, null] },
+    ]);
+  });
+
   it('submits a miss as zero without typed input', () => {
     const fixture = TestBed.createComponent(ScoreboardComponent);
     const scoreboard = fixture.componentInstance;

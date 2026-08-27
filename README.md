@@ -6,12 +6,12 @@ Ein schlankes Dart-Scoreboard als Angular-Webapp.
 
 - 501-Scoreboard für zwei abwechselnd spielende Personen
 - Touchscreen-optimierte Eingabe einer Aufnahme von 0 bis 180 Punkten
-- Zahlen-Keypad mit kontextabhängigem `BACK`/`CLEAR`, Eingabeanzeige und dynamischer `NO SCORE`/`SUBMIT`-Taste
+- Zahlen-Keypad mit gleich hohen Zahlen-, Eingabe- und Aktionstasten; darunter stehen `CLEAR` links und die dynamische `NO SCORE`/`SUBMIT`-Taste rechts jeweils in doppelter Tastenbreite
 - Dynamische `180`/`0`-Taste: ohne Eingabe wird 180 eingetragen, nach begonnener Eingabe wird die Taste zur Ziffer 0
 - Double-out-Regel: Eine Aufnahme darf keinen Restwert von 1 hinterlassen; das Leg endet frühestens bei Restwert 2
 - Jede normale Aufnahme zählt als drei Pfeile; beim Checkout werden verwendete Pfeile und Pfeile aufs Doppel abgefragt, damit Pfeilzahl und 3-Dart-AVG stimmen
 - Eingabefehler erscheinen direkt oberhalb der Tastatur, ohne deren Position zu verschieben
-- Kompakte, scrollbare Wurfübersicht mit Aufnahme und Restwert je Spieler sowie kumulierter Pfeilzahl in der Mitte
+- Drei kompakte, nicht scrollbare Aufnahmerunden in der Gegenüberstellung beider Spieler; Wurfwerte erscheinen fett und weiß, eine durchgehende graue Mittelspalte mit der Pfeilzahl trennt die Spieler
 - Antippbare Aufnahmewerte mit Dialog zur nachträglichen Korrektur und automatischer Neuberechnung der Restwerte
 - Zehn vorkonfigurierte Hotkeys: 26, 40, 41, 43, 45, 60, 81, 85, 100 und 140
 - Best-of-3-Match mit automatischem Leg-Wechsel; nach zwei Leg-Siegen steht der Matchgewinner fest
