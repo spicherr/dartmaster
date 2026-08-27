@@ -11,9 +11,11 @@ Ein schlankes Dart-Scoreboard als Angular-Webapp.
 - Double-out-Regel: Eine Aufnahme darf keinen Restwert von 1 hinterlassen; das Leg endet frühestens bei Restwert 2
 - Jede normale Aufnahme zählt als drei Pfeile; beim Checkout werden verwendete Pfeile und Pfeile aufs Doppel abgefragt, damit Pfeilzahl und 3-Dart-AVG stimmen
 - Eingabefehler erscheinen direkt oberhalb der Tastatur, ohne deren Position zu verschieben
-- Wurfübersicht nach Spieler-Wurfnummer: Spieler 1 Wurf 1, Spieler 2 Wurf 1, Spieler 1 Wurf 2 usw.
+- Kompakte, scrollbare Wurfübersicht mit Aufnahme und Restwert je Spieler sowie kumulierter Pfeilzahl in der Mitte
 - Antippbare Aufnahmewerte mit Dialog zur nachträglichen Korrektur und automatischer Neuberechnung der Restwerte
 - Zehn vorkonfigurierte Hotkeys: 26, 40, 41, 43, 45, 60, 81, 85, 100 und 140
+- Best-of-3-Match mit automatischem Leg-Wechsel; nach zwei Leg-Siegen steht der Matchgewinner fest
+- Getrennte Anzeige von Leg-AVG und übergreifendem Game-AVG
 
 ## Projektstruktur
 
@@ -42,4 +44,4 @@ Die Anwendung ist danach unter `https://spicherr.github.io/dartmaster/` erreichb
 
 ## Bedienung
 
-Punktwerte werden über das Touch-Keypad eingegeben. Ohne eingegebene Zahl trägt `NO SCORE` eine Null-Aufnahme ein; sobald eine Zahl eingegeben wurde, wird daraus `SUBMIT`. Ohne Eingabe setzt `BACK` die letzte Aufnahme zurück und bringt den entsprechenden Spieler wieder an den Zug; bei einer laufenden Eingabe wird die Taste zu `CLEAR`. Die Restwerte werden für beide Spieler gleichwertig mit Anzahl Würfen, 3-Dart-AVG und letztem Wurf angezeigt. Ein Tipp auf einen Wert in der Wurfübersicht öffnet die Korrektur.
+Punktwerte werden über das Touch-Keypad eingegeben. Ohne eingegebene Zahl trägt `NO SCORE` eine Null-Aufnahme ein; sobald eine Zahl eingegeben wurde, wird daraus `SUBMIT`. Ohne Eingabe setzt `BACK` die letzte Aufnahme zurück und bringt den entsprechenden Spieler wieder an den Zug; bei einer laufenden Eingabe wird die Taste zu `CLEAR`. Die Restwerte werden für beide Spieler mit AVG, letztem Wurf und S/L angezeigt. Ein Tipp auf einen Wert in der Wurfübersicht öffnet die Korrektur.

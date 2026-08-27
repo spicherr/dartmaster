@@ -8,25 +8,70 @@
 
   <div class="game-area">
     <section class="scoreboard" aria-label="Dart Scoreboard">
+      <div class="match-info" aria-label="Spielmodus">Best Of {{ bestOfLegs }} ({{ currentLeg() }} / {{ bestOfLegs }})</div>
       <div class="players" aria-label="Spielstände">
-        @for (player of players; track $index) {
-          <section class="player" [class.active]="activePlayer() === $index" [class.winner]="winner() === $index">
-            <div class="player-heading"><span>{{ player }}</span><small>{{ winner() === $index ? 'GEWONNEN' : activePlayer() === $index ? 'AM WURF' : '' }}</small></div>
-            <strong class="player-remaining">{{ playerScores()[$index] }}</strong>
+        <section class="player" [class.active]="activePlayer() === 0" [class.winner]="winner() === 0">
+          <div class="player-heading"><span>{{ players[0] }}</span></div>
+          <div class="player-summary">
+            <strong class="player-remaining">{{ playerScores()[0] }}</strong>
             <dl class="player-stats">
-              <div><dt>Pfeile</dt><dd>{{ playerStats()[$index].dartCount }}</dd></div>
-              <div><dt>AVG / 3 Darts</dt><dd>{{ playerStats()[$index].average }}</dd></div>
-              <div><dt>Letzter Wurf</dt><dd>{{ playerStats()[$index].lastThrow ?? '-' }}</dd></div>
+              <div><dt>Leg AVG</dt><dd>{{ playerStats()[0].average }}</dd></div>
+              <div><dt>Game AVG</dt><dd>{{ gameStats()[0].average }}</dd></div>
+              <div><dt>S / L</dt><dd>{{ setLegScores()[0] }}</dd></div>
             </dl>
-          </section>
-        }
+          </div>
+        </section>
+        <section class="player" [class.active]="activePlayer() === 1" [class.winner]="winner() === 1">
+          <div class="player-heading"><span>{{ players[1] }}</span></div>
+          <div class="player-summary">
+            <strong class="player-remaining">{{ playerScores()[1] }}</strong>
+            <dl class="player-stats">
+              <div><dt>Leg AVG</dt><dd>{{ playerStats()[1].average }}</dd></div>
+              <div><dt>Game AVG</dt><dd>{{ gameStats()[1].average }}</dd></div>
+              <div><dt>S / L</dt><dd>{{ setLegScores()[1] }}</dd></div>
+            </dl>
+          </div>
+        </section>
       </div>
-      <div class="entry-message" aria-live="assertive">@if (inputMessage()) { <p role="alert">{{ inputMessage() }}</p> }</div>
-      <section class="touch-entry" aria-label="Touch Eingabe">
+      <section class="history" aria-label="Wurfübersicht">
+        <div class="throw-scroll" role="list" aria-label="Aufnahmen pro Spieler">
+          <div class="throw-log-row start-score"><span></span><span>{{ startScore }}</span><span></span><span></span><span>{{ startScore }}</span></div>
+          @for (throwRow of throwHistoryRows(); track throwRow.round) {
+            <div class="throw-log-row" role="listitem">
+              <span>
+                @if (throwRow.scores[0]; as playerOneThrow) {
+                  <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 1, ' + throwRow.round * 3 + ' Pfeile ändern'" (click)="openEditThrow(playerOneThrow.id)">{{ playerOneThrow.score }}</button>
+                }
+              </span>
+              <span class="remaining-value">{{ throwRow.remaining[0] ?? '' }}</span>
+              <span class="dart-count">{{ throwRow.round * 3 }}</span>
+              <span>
+                @if (throwRow.scores[1]; as playerTwoThrow) {
+                  <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 2, ' + throwRow.round * 3 + ' Pfeile ändern'" (click)="openEditThrow(playerTwoThrow.id)">{{ playerTwoThrow.score }}</button>
+                }
+              </span>
+              <span class="remaining-value">{{ throwRow.remaining[1] ?? '' }}</span>
+            </div>
+          } @empty {
+            <p class="empty-history">Noch keine Aufnahmen</p>
+          }
+        </div>
+      </section>
+      <div class="keypad-dock">
+        <div class="entry-message" aria-live="assertive">@if (inputMessage()) { <p role="alert">{{ inputMessage() }}</p> }</div>
+        <section class="touch-entry" aria-label="Touch Eingabe">
         <div class="entry-display-row">
-          <button class="keypad-button utility" type="button" (click)="clearOrUndo()" [disabled]="entryDisabled() || (scoreInput().length === 0 && throws().length === 0)">{{ scoreInput() ? 'CLEAR' : 'BACK' }}</button>
+          <button class="keypad-button utility" type="button" (click)="undo()" [disabled]="entryDisabled() || throws().length === 0">BACK</button>
+          <button class="keypad-button utility" type="button" (click)="clearInput()" [disabled]="entryDisabled() || scoreInput().length === 0">CLEAR</button>
           <output class="entry-display" aria-live="polite">{{ scoreInput() || '0' }}</output>
-          <button class="keypad-button submit" type="button" (click)="scoreInput() ? submitInput() : noScore()" [disabled]="entryDisabled()">{{ scoreInput() ? 'SUBMIT' : 'NO SCORE' }}</button>
+          <div class="entry-actions">
+            <button class="keypad-button submit" type="button" (click)="scoreInput() ? submitInput() : noScore()" [disabled]="entryDisabled()">{{ scoreInput() ? 'SUBMIT' : 'NO SCORE' }}</button>
+            @if (hasRestScoreInput()) {
+              <button class="keypad-button remaining-score" type="button" (click)="submitRemainingScore()" [disabled]="entryDisabled()">RESTSCORE</button>
+            } @else if (checkoutAvailable()) {
+              <button class="keypad-button checkout" type="button" (click)="startCheckout()" [disabled]="entryDisabled()">CHECKOUT</button>
+            }
+          </div>
         </div>
 
         <div class="keypad-grid">
@@ -54,33 +99,11 @@
           <button class="keypad-button hotkey" type="button" (click)="activateShortcut(9)" [disabled]="shortcutScore(9) === null || entryDisabled()"><span>{{ shortcutScore(9) ?? '-' }}</span></button>
           <button class="keypad-button hotkey" type="button" (click)="activateShortcut(7)" [disabled]="shortcutScore(7) === null || entryDisabled()"><span>{{ shortcutScore(7) ?? '-' }}</span></button>
         </div>
-      </section>
-
-    </section>
-
-    <section class="history" aria-label="Wurfübersicht">
-      <p class="eyebrow">AUFNAHMEN</p>
-      <div class="throw-table" role="table">
-        <div class="throw-row table-head" role="row"><span role="columnheader">Spieler 1</span><span role="columnheader">Wurf</span><span role="columnheader">Spieler 2</span></div>
-        @for (throwRow of throwRows(); track throwRow.round) {
-          <div class="throw-row" role="row">
-            <span role="cell">
-              @if (throwRow.scores[0]; as playerOneThrow) {
-                <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 1, Wurf ' + throwRow.round + ' ändern'" (click)="openEditThrow(playerOneThrow.id)">{{ playerOneThrow.score }}</button>
-              }
-            </span>
-            <span class="throw-number" role="cell">{{ throwRow.round }}</span>
-            <span role="cell">
-              @if (throwRow.scores[1]; as playerTwoThrow) {
-                <button class="throw-value" type="button" [attr.aria-label]="'Aufnahme von Spieler 2, Wurf ' + throwRow.round + ' ändern'" (click)="openEditThrow(playerTwoThrow.id)">{{ playerTwoThrow.score }}</button>
-              }
-            </span>
-          </div>
-        } @empty {
-          <p class="empty-history">Noch keine Aufnahmen</p>
-        }
+        </section>
       </div>
+
     </section>
+
   </div>
 
 </main>
@@ -107,18 +130,40 @@
   <div class="modal-backdrop">
     <section class="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
       <p class="eyebrow">CHECKOUT</p>
-      <h1 id="checkout-title">{{ players[checkout.player] }} gewinnt mit {{ checkout.score }}</h1>
+      <h1 id="checkout-title">{{ players[checkout.player] }} · {{ checkout.score }} Rest</h1>
       <p>Wie viele Pfeile wurden für das Checkout benötigt?</p>
       <div class="choice-buttons" aria-label="Benötigte Pfeile">
-        @for (darts of [1, 2, 3]; track darts) { <button type="button" [class.selected]="checkoutDarts() === darts" (click)="setCheckoutDarts(darts)">{{ darts }}</button> }
+        @for (darts of [1, 2, 3]; track darts) {
+          <button type="button" [class.selected]="checkoutDarts() === darts" [disabled]="checkoutOption(darts) === null" (click)="setCheckoutDarts(darts)">{{ darts }}</button>
+        }
       </div>
       <p>Wie viele Pfeile gingen auf Doppel?</p>
       <div class="choice-buttons" aria-label="Pfeile auf Doppel">
-        @for (attempts of [1, 2, 3]; track attempts) { <button type="button" [class.selected]="checkoutDoubleAttempts() === attempts" [disabled]="attempts > checkoutDarts()" (click)="setCheckoutDoubleAttempts(attempts)">{{ attempts }}</button> }
+        @for (attempts of [1, 2, 3]; track attempts) {
+          <button type="button" [class.selected]="checkoutDoubleAttempts() === attempts" [disabled]="attempts > (checkoutOption(checkoutDarts())?.maxDoubleAttempts ?? 0)" (click)="setCheckoutDoubleAttempts(attempts)">{{ attempts }}</button>
+        }
       </div>
       <div class="dialog-actions">
         <button class="secondary-button" type="button" (click)="closeCheckout()">Abbrechen</button>
         <button class="primary" type="button" (click)="saveCheckout()">Leg abschliessen</button>
+      </div>
+    </section>
+  </div>
+}
+
+@if (pendingMissedCheckout(); as missedCheckout) {
+  <div class="modal-backdrop">
+    <section class="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="missed-checkout-title">
+      <p class="eyebrow">CHECKOUT VERPASST</p>
+      <h1 id="missed-checkout-title">{{ players[missedCheckout.player] }} · {{ missedCheckout.score }} Rest</h1>
+      <p>Wie viele Pfeile gingen auf Doppel?</p>
+      <div class="choice-buttons four-options" aria-label="Pfeile auf Doppel">
+        @for (attempts of [0, 1, 2, 3]; track attempts) {
+          <button type="button" [class.selected]="missedCheckoutDoubleAttempts() === attempts" [disabled]="attempts > missedCheckout.maxDoubleAttempts" (click)="setMissedCheckoutDoubleAttempts(attempts)">{{ attempts }}</button>
+        }
+      </div>
+      <div class="dialog-actions">
+        <button class="primary" type="button" [disabled]="missedCheckoutDoubleAttempts() === null" (click)="saveMissedCheckoutDoubleAttempts()">Speichern</button>
       </div>
     </section>
   </div>
