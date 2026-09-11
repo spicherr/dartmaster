@@ -316,6 +316,115 @@ describe('ScoreboardComponent', () => {
     expect(scoreboard['playerScores']()).toEqual([0, 501]);
   });
 
+  it('shows the final statistics and starts a clean game from the header', () => {
+    const fixture = TestBed.createComponent(ScoreboardComponent);
+    const scoreboard = fixture.componentInstance;
+    finishLegForPlayerOne(scoreboard);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.statistics')).toBeNull();
+    finishLegForPlayerOne(scoreboard);
+    fixture.detectChanges();
+
+    expect(scoreboard['legResults']().map((leg) => leg.players)).toEqual([
+      [{ average: '167.0', dartCount: 9, doubleRate: { percentage: '100.0 %', hits: 1, attempts: 1 }, remaining: 0, checkout: 141 },
+        { average: '0.0', dartCount: 6, doubleRate: { percentage: '–', hits: 0, attempts: 0 }, remaining: 501, checkout: null }],
+      [{ average: '167.0', dartCount: 9, doubleRate: { percentage: '100.0 %', hits: 1, attempts: 1 }, remaining: 0, checkout: 141 },
+        { average: '0.0', dartCount: 6, doubleRate: { percentage: '–', hits: 0, attempts: 0 }, remaining: 501, checkout: null }],
+    ]);
+    expect(Array.from(fixture.nativeElement.querySelectorAll('.result-score'), (node: any) => node.textContent.trim())).toEqual(['2', '0']);
+    expect(fixture.nativeElement.querySelector('.result-player.winner').getAttribute('aria-label')).toContain('Spieler 1');
+    expect(fixture.nativeElement.querySelectorAll('[role="tab"]').length).toBe(3);
+    expect(Array.from(fixture.nativeElement.querySelectorAll('.statistic-line dt'), (node: any) => node.textContent.trim())).toEqual([
+      '3-Dart AVG', 'First 9-Darts AVG', 'CHECKOUT in %', 'CHECKOUTS', 'Höchstes Finish', 'Höchste Aufnahme', 'Anzahl Darts',
+      '180', '160+', '140+', '120+', '100+', '80+', '60+', '40+',
+    ]);
+    expect(fixture.nativeElement.querySelector('[data-stat="180"] .player-one').textContent.trim()).toBe('4');
+    expect(fixture.nativeElement.querySelector('[data-stat="160+"] .player-one').textContent.trim()).toBe('0');
+    expect(fixture.nativeElement.querySelector('[data-stat="140+"] .player-one').textContent.trim()).toBe('2');
+    expect(fixture.nativeElement.querySelector('[data-stat="Höchstes Finish"] .player-one').textContent.trim()).toBe('141');
+    expect(fixture.nativeElement.querySelector('[data-stat="Höchste Aufnahme"] .player-one').textContent.trim()).toBe('180');
+
+    expect(fixture.nativeElement.querySelector('.statistic-line').getAttribute('data-stat')).toBe('3-Dart AVG');
+    fixture.nativeElement.querySelector('#stats-tab-1').click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('#stats-tab-1').getAttribute('aria-selected')).toBe('true');
+    expect(fixture.nativeElement.querySelector('.touch-entry')).toBeNull();
+    scoreboard['onKeydown'](new KeyboardEvent('keydown', { key: 'Backspace' }));
+    expect(scoreboard['playerScores']()).toEqual([0, 501]);
+    const button = fixture.nativeElement.querySelector('header button');
+    expect(button.textContent.trim()).toBe('Neues Spiel beginnen');
+    expect(fixture.nativeElement.querySelector('.statistics').contains(button)).toBe(false);
+    button.click();
+    fixture.detectChanges();
+    expect(scoreboard['legResults']()).toEqual([]);
+    expect(scoreboard['legWins']()).toEqual([0, 0]);
+    expect(scoreboard['playerScores']()).toEqual([501, 501]);
+    expect(fixture.nativeElement.querySelector('.statistics')).toBeNull();
+  });
+
+  it('weights match averages and double rates by darts and attempts across all three legs', () => {
+    const fixture = TestBed.createComponent(ScoreboardComponent);
+    const scoreboard = fixture.componentInstance;
+    finishLegForPlayerOne(scoreboard);
+    scoreboard['addScore'](0);
+    scoreboard['addScore'](180);
+    scoreboard['addScore'](0);
+    scoreboard['addScore'](180);
+    scoreboard['addScore'](0);
+    scoreboard['addScore'](101);
+    scoreboard['setMissedCheckoutDoubleAttempts'](1);
+    scoreboard['saveMissedCheckoutDoubleAttempts']();
+    scoreboard['addScore'](0);
+    scoreboard['addScore'](40);
+    scoreboard['setCheckoutDarts'](1);
+    scoreboard['saveCheckout']();
+    finishLegForPlayerOne(scoreboard);
+
+    expect(scoreboard['legWins']()).toEqual([2, 1]);
+    expect(scoreboard['legResults']().length).toBe(3);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-stat="First 9-Darts AVG"] .player-two').textContent.trim()).toBe('65.9');
+    expect(fixture.nativeElement.querySelector('[data-stat="Höchste Aufnahme"] .better-value')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-stat="3-Dart AVG"] .player-one').classList.contains('better-value')).toBe(true);
+    expect(fixture.nativeElement.querySelector('[data-stat="Höchstes Finish"] .player-two').classList.contains('better-value')).toBe(false);
+
+    fixture.nativeElement.querySelector('#stats-tab-2').click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-stat="CHECKOUTS"] .player-two').classList.contains('better-value')).toBe(true);
+    expect(fixture.nativeElement.querySelector('[data-stat="CHECKOUTS"] .player-one').classList.contains('better-value')).toBe(false);
+    expect(fixture.nativeElement.querySelector('[data-stat="3-Dart AVG"] .player-two').classList.contains('better-value')).toBe(true);
+    expect(fixture.nativeElement.querySelector('[data-stat="160+"] .better-value')).toBeNull();
+
+    expect(fixture.nativeElement.querySelector('[data-stat="First 9-Darts AVG"] .player-two').textContent.trim()).toBe('153.7');
+
+    expect(scoreboard['legResults']()[1].players[1]).toEqual({
+      average: '150.3', dartCount: 10, doubleRate: { percentage: '50.0 %', hits: 1, attempts: 2 }, remaining: 0, checkout: 40,
+    });
+    expect(scoreboard['gameStats']().map((stats) => stats.average)).toEqual(['100.2', '68.3']);
+    expect(scoreboard['gameDoubleRates']()).toEqual([{ percentage: '100.0 %', hits: 2, attempts: 2 }, { percentage: '50.0 %', hits: 1, attempts: 2 }]);
+  });
+
+  it('shows checkout counts with the percentage, including no attempts', () => {
+    const fixture = TestBed.createComponent(ScoreboardComponent);
+    const scoreboard = fixture.componentInstance;
+    finishLegForPlayerOne(scoreboard);
+    finishLegForPlayerOne(scoreboard);
+    const result = scoreboard['doubleRate']([
+      { id: 1, score: 40, at: new Date(), player: 0, darts: 3, doubleAttempts: 8 },
+    ], 0, 1);
+    expect(result).toEqual({ percentage: '12.5 %', hits: 1, attempts: 8 });
+    scoreboard['legResults'].update((legs) => legs.map((leg) => ({
+      ...leg, players: leg.players.map((stats, player) => player === 0 ? { ...stats, doubleRate: result } : stats),
+    })));
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('#stats-tab-1').click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-stat="CHECKOUT in %"] .player-one').textContent).toContain('12.5%');
+    expect(fixture.nativeElement.querySelector('[data-stat="CHECKOUTS"] .player-one').textContent.trim()).toBe('1 / 8');
+    expect(fixture.nativeElement.querySelector('[data-stat="CHECKOUTS"] .player-two').textContent.trim()).toBe('0 / 0');
+  });
+
   it('rejects a throw that would leave a remaining score of one', () => {
     const fixture = TestBed.createComponent(ScoreboardComponent);
     const scoreboard = fixture.componentInstance;

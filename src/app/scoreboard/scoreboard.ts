@@ -1,3 +1,4 @@
+import { DoubleRate, GameStatisticsComponent, LegResult } from './game-statistics';
 import { Component, HostListener, computed, signal } from '@angular/core';
 import { SCOREBOARD_CONFIG } from '../config/scoreboard.config';
 import { Throw } from '../shared/scoreboard.models';
@@ -41,6 +42,7 @@ interface PendingMissedCheckout {
 
 @Component({
   selector: 'app-scoreboard',
+  imports: [GameStatisticsComponent],
   templateUrl: './scoreboard.html',
   styleUrl: './scoreboard.scss',
 })
@@ -54,6 +56,7 @@ export class ScoreboardComponent {
   protected readonly inputMessage = signal<string | null>(null);
   protected readonly throws = signal<Throw[]>([]);
   protected readonly completedLegThrows = signal<Throw[]>([]);
+  protected readonly legResults = signal<LegResult[]>([]);
   protected readonly currentLeg = signal(1);
   protected readonly legStartingPlayer = signal(0);
   protected readonly legWins = signal<[number, number]>([0, 0]);
@@ -90,6 +93,10 @@ export class ScoreboardComponent {
   protected readonly setLegScores = computed<[string, string]>(() => this.legWins().map((wins) => `0 / ${wins}`) as [string, string]);
   protected readonly playerStats = computed(() => this.calculateStats(this.throws()));
   protected readonly gameStats = computed(() => this.calculateStats([...this.completedLegThrows(), ...this.throws()]));
+  protected readonly gameDoubleRates = computed(() => {
+    const allThrows = [...this.completedLegThrows(), ...this.throws()];
+    return this.players.map((_, player) => this.doubleRate(allThrows, player, this.legWins()[player]));
+  });
   protected readonly editingThrow = computed(() => {
     const id = this.editingThrowId();
     return id === null ? null : this.throws().find((throwItem) => throwItem.id === id) ?? null;
@@ -215,6 +222,17 @@ export class ScoreboardComponent {
     if (!checkout || !option || doubleAttempts < 1 || doubleAttempts > option.maxDoubleAttempts) return;
 
     this.recordThrow(checkout.score, checkout.player, darts, doubleAttempts);
+    this.legResults.update((legs) => [...legs, {
+      number: this.currentLeg(),
+      throws: [...this.throws()],
+      players: this.players.map((_, player) => ({
+        average: this.playerStats()[player].average,
+        dartCount: this.playerStats()[player].dartCount,
+        doubleRate: this.doubleRate(this.throws(), player, player === checkout.player ? 1 : 0),
+        remaining: this.playerScores()[player],
+        checkout: player === checkout.player ? checkout.score : null,
+      })),
+    }]);
     const updatedLegWins = this.legWins().map((wins, player) => player === checkout.player ? wins + 1 : wins) as [number, number];
     this.legWins.set(updatedLegWins);
     this.activePlayer.set(checkout.player);
@@ -312,6 +330,7 @@ export class ScoreboardComponent {
   }
 
   protected undo(): void {
+    if (this.entryDisabled()) return;
     const [last, ...rest] = this.throws();
     if (!last) return;
     this.playerScores.update((scores) => scores.map((remaining, index) => index === last.player ? remaining + last.score : remaining) as [number, number]);
@@ -325,6 +344,10 @@ export class ScoreboardComponent {
     this.activePlayer.set(0);
     this.throws.set([]);
     this.completedLegThrows.set([]);
+    this.legResults.set([]);
+    this.pendingMissedCheckout.set(null);
+    this.missedCheckoutDoubleAttempts.set(null);
+    this.closeEditThrow();
     this.scoreInput.set('');
     this.inputMessage.set(null);
     this.pendingCheckout.set(null);
@@ -507,6 +530,12 @@ export class ScoreboardComponent {
     }
 
     return 3;
+  }
+
+  private doubleRate(throws: Throw[], player: number, checkouts: number): DoubleRate {
+    const attempts = throws.filter((item) => item.player === player)
+      .reduce((sum, item) => sum + (item.doubleAttempts ?? 0), 0);
+    return { percentage: attempts ? `${((checkouts / attempts) * 100).toFixed(1)} %` : '–', hits: checkouts, attempts };
   }
 
   private calculateStats(throws: Throw[]): [PlayerStats, PlayerStats] {

@@ -15,6 +15,17 @@ Ein schlankes Dart-Scoreboard als Angular-Webapp.
 - Antippbare Aufnahmewerte mit Dialog zur nachträglichen Korrektur und automatischer Neuberechnung der Restwerte
 - Zehn vorkonfigurierte Hotkeys: 26, 40, 41, 43, 45, 60, 81, 85, 100 und 140
 - Best-of-3-Match mit automatischem Leg-Wechsel; nach zwei Leg-Siegen steht der Matchgewinner fest
+- Nach Matchende: Statistikseite mit Resultat, Gesamt- und Leg-AVG, Doppelquote sowie Restscore und Checkout pro Leg für beide Spieler
+- Oben zeigen die Spielerblöcke den Spielernamen und die gewonnenen Legs; der Matchgewinner erhält einen goldenen Rahmen und eine Krone
+- Darunter deutlich abgesetzte Registerkarten mit hervorgehobenem aktivem Tab für „Spiel“ und alle gespielten Legs, per Klick oder Pfeiltasten auswählbar
+- Kompakte Ergebnisboxen und flache Tabs lassen Platz für alle Kennzahlen ohne Scrollen. Der Wertebereich nutzt die volle Breite der Spielerboxen; die Kategorie erhält die Hälfte, jeder Spielerwert ein Viertel. Gleich hohe Zeilen und Schriftgrößen passen sich der verfügbaren Höhe an. Spiel und Legs zeigen dieselben Zeilen: 3-Dart AVG, First 9-Darts AVG, CHECKOUT in %, CHECKOUTS, Höchstes Finish, Höchste Aufnahme, Anzahl Darts, 180, 160+, 140+, 120+, 100+, 80+, 60+ und 40+
+- First 9-Darts AVG berücksichtigt die ersten drei Aufnahmen je Spieler und Leg (bei frühem Checkout die tatsächlich geworfenen Darts); im Spiel werden Punkte und Darts dieser Aufnahmen über alle Legs zusammengezählt
+- Aufnahme-Kategorien sind getrennte Bereiche: 180, 160–179, 140–159 usw. bis 40–59; jede Aufnahme zählt höchstens einmal
+- CHECKOUTS zeigt erfolgreiche Checkouts / Doppelversuche; je Kennzahl wird nur der bessere Wert goldfarben dargestellt, unabhängig vom Matchgewinner. Gleichstände und nicht vergleichbare Werte bleiben neutral. Bei CHECKOUTS zählen zuerst mehr Treffer, dann weniger Versuche. Keine Sieger- oder Restscore-Zeile
+- App-Titel und grüner Button „Neues Spiel beginnen“ sind auf Scoreboard und Statistik an den äußeren Rändern der Spielerboxen ausgerichtet; der Button bleibt oberhalb der scrollbaren Statistik sichtbar
+- Beide Ansichten zeigen „BEST OF 3 Single In / Double Out“ mittig auf derselben Höhe wie App-Titel und Button, das Scoreboard zusätzlich den aktuellen Leg-Stand, z. B. „(1 / 3)“
+- Ein größerer Abstand zwischen „Anzahl Darts“ und „180“ trennt die allgemeinen Kennzahlen von den Aufnahme-Kategorien; Treffer / Doppelversuche erscheinen in derselben Schriftgröße und Stärke wie die übrigen Werte
+- „CHECKOUTS“ zeigt erfolgreiche Checkouts / erfasste Doppelversuche, „CHECKOUT in %“ den Prozentwert für das gesamte Spiel und jedes Leg (z. B. 12.5 % und 1 / 8); ohne Versuche werden „–“ und „0 / 0“ angezeigt
 - Getrennte Anzeige von Leg-AVG und übergreifendem Game-AVG
 
 ## Projektstruktur

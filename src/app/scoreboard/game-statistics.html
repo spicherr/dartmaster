@@ -1,0 +1,32 @@
+<section class="statistics" aria-label="Spielstatistik" tabindex="0">
+  <section class="match-result" aria-label="Resultat">
+    @for (player of [0, 1]; track player) {
+      <section class="result-player" [class.winner]="winner() === player" [attr.aria-label]="players()[player] + (winner() === player ? ' gewinnt' : '')">
+        <div class="player-heading">{{ players()[player] }}</div>
+        @if (winner() === player) {
+          <svg class="crown" viewBox="0 0 24 24" role="img" aria-label="Matchgewinner"><path d="M3 6 8 10 12 3 16 10 21 6 19 18H5ZM5 20H19V22H5Z" /></svg>
+        }
+        <strong class="result-score" [attr.aria-label]="players()[player] + ': gewonnene Legs'">{{ legWins()[player] }}</strong>
+      </section>
+    }
+  </section>
+
+  <div class="statistics-tabs" role="tablist" aria-label="Spiel oder Leg auswählen">
+    @for (tab of tabs(); track tab) {
+      <button type="button" role="tab" [id]="'stats-tab-' + tab" aria-controls="stats-panel"
+        [attr.aria-selected]="selectedTab() === tab" [tabIndex]="selectedTab() === tab ? 0 : -1"
+        (click)="selectedTab.set(tab)" (keydown)="onTabKey($event, tab)">{{ tab === 0 ? 'Spiel' : 'Leg ' + tab }}</button>
+    }
+  </div>
+  <section id="stats-panel" role="tabpanel" [attr.aria-labelledby]="'stats-tab-' + selectedTab()" tabindex="0">
+    <dl class="statistic-lines" [style.grid-template-rows]="'repeat(7, minmax(0, 1fr)) clamp(6px, 1.2dvh, 12px) repeat(' + (rows().length - 7) + ', minmax(0, 1fr))'">
+      @for (row of rows(); track row.label) {
+        <div class="statistic-line" [attr.data-stat]="row.label">
+          <dt>{{ row.label }}</dt>
+          <dd class="player-one" [class.better-value]="row.better[0]" [attr.aria-label]="players()[0]">{{ row.values[0] }}</dd>
+          <dd class="player-two" [class.better-value]="row.better[1]" [attr.aria-label]="players()[1]">{{ row.values[1] }}</dd>
+        </div>
+      }
+    </dl>
+  </section>
+</section>

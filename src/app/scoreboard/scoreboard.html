@@ -1,15 +1,19 @@
 <main class="scoreboard-shell">
-  <header>
+  <header class="game-header">
     <div class="brand"><span class="brand-mark">●</span> dartmaster</div>
+    <div class="match-info" aria-label="Spielmodus">BEST OF {{ bestOfLegs }} Single In / Double Out @if (!isFinished()) { <span>({{ currentLeg() }} / {{ bestOfLegs }})</span> }</div>
     <div class="header-actions">
-      <button class="reset-button" type="button" (click)="reset()">Neu starten</button>
+      <button class="reset-button" type="button" (click)="reset()">Neues Spiel beginnen</button>
     </div>
   </header>
 
+  @if (isFinished()) {
+    <app-game-statistics [players]="players" [legWins]="legWins()" [winner]="matchWinner()!"
+      [legResults]="legResults()" />
+  } @else {
   <div class="game-area">
     <section class="scoreboard" aria-label="Dart Scoreboard">
       <div class="player-area">
-        <div class="match-info" aria-label="Spielmodus">Best Of {{ bestOfLegs }} ({{ currentLeg() }} / {{ bestOfLegs }})</div>
         <div class="players" aria-label="Spielstände">
         <section class="player" [class.active]="activePlayer() === 0" [class.winner]="winner() === 0">
           <div class="player-heading"><span>{{ players[0] }}</span></div>
@@ -106,6 +110,7 @@
 
   </div>
 
+  }
 </main>
 
 @if (editingThrow(); as throwToEdit) {
